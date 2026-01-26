@@ -1,5 +1,6 @@
 bin/
 obj/
+nuget/
 *.exe
 *.dll
 *.pdb
@@ -41,3 +42,5 @@ appsettings.Development.json
 
 *.user
 *.userprefs
+
+
