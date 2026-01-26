@@ -1,5 +1,5 @@
 
-namespace MediatorXL.Interfaces;
+namespace MediatorXL.Abstractions;
 
 public interface ISender
 {

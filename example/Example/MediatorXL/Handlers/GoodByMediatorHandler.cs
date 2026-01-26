@@ -1,5 +1,5 @@
 
-using MediatorXL.Interfaces;
+using MediatorXL.Abstractions;
 
 namespace Example;
 

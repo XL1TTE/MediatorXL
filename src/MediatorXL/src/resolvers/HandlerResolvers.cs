@@ -1,4 +1,4 @@
-using MediatorXL.Interfaces;
+using MediatorXL.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediatorXL.Resolvers;

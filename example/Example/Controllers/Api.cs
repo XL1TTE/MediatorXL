@@ -1,6 +1,6 @@
 
 using Example;
-using MediatorXL.Interfaces;
+using MediatorXL.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController, Route("api")]

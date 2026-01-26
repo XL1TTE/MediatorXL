@@ -1,6 +1,6 @@
 
 using System.Reflection;
-using MediatorXL.Interfaces;
+using MediatorXL.Abstractions;
 using MediatorXL.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,6 +1,6 @@
 
 using System.Collections.Concurrent;
-using MediatorXL.Interfaces;
+using MediatorXL.Abstractions;
 using MediatorXL.Resolvers;
 using Microsoft.Extensions.DependencyInjection;
 

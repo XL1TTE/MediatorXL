@@ -1,4 +1,4 @@
-namespace MediatorXL.Interfaces;
+namespace MediatorXL.Abstractions;
 
 public interface IHandler<in TRequest> where TRequest : IRequest
 {
