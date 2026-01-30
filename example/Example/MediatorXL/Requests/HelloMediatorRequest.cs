@@ -1,9 +1,10 @@
 
+using System.ComponentModel;
 using MediatorXL.Abstractions;
 
 namespace Example;
 
-public class HelloMediatorRequest : IRequest
+public class HelloMediatorRequest : IMessage
 {
     public string Name { get; set; } = string.Empty;
 }

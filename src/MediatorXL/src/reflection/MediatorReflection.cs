@@ -19,6 +19,22 @@ internal static class MediatorReflection
 
         return types;
     }
+    internal static IEnumerable<Type> FindSubclassesOfGeneric(Assembly assembly, Type genericType)
+    {
+        var types = assembly.GetTypes()
+            .Where(t => IsDefinition(t) &&
+                t.GetInterfaces().Any(i => i.IsGenericType &&
+                i.GetGenericTypeDefinition() == genericType));
+
+        return types;
+    }
+    internal static IEnumerable<Type> FindSubclassesOf(Assembly assembly, Type type)
+    {
+        var types = assembly.GetTypes()
+            .Where(t => IsDefinition(t) && type.IsAssignableFrom(t));
+
+        return types;
+    }
 
 
     #region Utility

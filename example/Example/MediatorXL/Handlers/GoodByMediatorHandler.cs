@@ -3,7 +3,7 @@ using MediatorXL.Abstractions;
 
 namespace Example;
 
-public class GoodByMediatorHandler : IHandler<GoodNightMediatorRequest, string>
+public class GoodByMediatorHandler : IRequestHandler<GoodNightMediatorRequest, string>
 {
     public Task<string> Handle(GoodNightMediatorRequest request, CancellationToken ct = default)
     {

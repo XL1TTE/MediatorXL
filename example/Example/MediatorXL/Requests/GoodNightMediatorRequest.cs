@@ -3,7 +3,8 @@ using MediatorXL.Abstractions;
 
 namespace Example;
 
-public class GoodNightMediatorRequest : IRequest<string>
+[Obsolete]
+public class GoodNightMediatorRequest : IMessage<string>
 {
     public string Name { get; set; } = string.Empty;
 }

@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatorXL(cfg =>
 {
-    cfg.AssembliesWithHandlers = new[]
+    cfg.AssembliesToScan = new[]
     {
         typeof(Program).Assembly,
     };

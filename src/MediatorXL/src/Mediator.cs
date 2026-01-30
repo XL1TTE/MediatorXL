@@ -1,47 +1,57 @@
 
 using System.Collections.Concurrent;
+using System.Reflection;
 using MediatorXL.Abstractions;
+using MediatorXL.Middleware;
 using MediatorXL.Resolvers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediatorXL;
 
-public sealed class MediatorXL(IServiceProvider _serviceProvider) : IMediator
+public class MediatorConfig
+{
+    public IEnumerable<Assembly> AssembliesToScan { get; set; } = Array.Empty<Assembly>();
+    internal IEnumerable<IGlobalMiddleware> GlobalMiddlewares { get; set; } = Array.Empty<IGlobalMiddleware>();
+}
+
+public sealed class MediatorXL(
+    IServiceProvider _serviceProvider,
+    IEnumerable<IGlobalMiddleware> _globalMiddlewares) : IMediator
 {
     private static ConcurrentDictionary<Type, object> _resolversCache = new();
 
-    public Task Send<TRequest>(TRequest request, CancellationToken ct = default) where TRequest : IRequest
+    public async Task Notify<TMessage>(TMessage message, CancellationToken ct = default) where TMessage : IMessage
     {
-        if (request == null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
+        var handlers = _serviceProvider.GetServices<IEventListener<TMessage>>();
 
-        var handlers = _serviceProvider.GetServices<IHandler<TRequest>>();
+        await _globalMiddlewares.CallAllPreHandleMiddlewares(message, ct);
 
         foreach (var handler in handlers)
         {
             if (ct.IsCancellationRequested) { throw new OperationCanceledException(); }
-            handler.Handle(request, ct);
+            await handler.Handle(message, ct);
         }
-        return Task.CompletedTask;
+
+        await _globalMiddlewares.CallAllPostHandleMiddlewares(message, ct);
+
     }
-    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken ct = default)
+    public async Task<TResponse> Request<TResponse>(IMessage<TResponse> message, CancellationToken ct = default)
     {
-        if (request == null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
-        var requestType = request.GetType();
+        var requestType = message.GetType();
 
         var resolver = _resolversCache.GetOrAdd(requestType, (reqType) =>
         {
-            var resolverType = typeof(HandlerResolver<,>).MakeGenericType(request.GetType(), typeof(TResponse));
+            var resolverType = typeof(HandlerResolver<,>).MakeGenericType(message.GetType(), typeof(TResponse));
             return Activator.CreateInstance(resolverType)!;
         });
 
-        return ((HandlerResolver<TResponse>)resolver).Resolve(request, _serviceProvider, ct);
+        await _globalMiddlewares.CallAllPreHandleMiddlewares(message, ct);
 
+        var response = await ((HandlerResolver<TResponse>)resolver).Resolve(message, _serviceProvider, ct);
+
+        await _globalMiddlewares.CallAllPostHandleMiddlewares(message, response, ct);
+
+        return response;
     }
 
 }
