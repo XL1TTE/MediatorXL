@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatorXL.Abstractions" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
   </ItemGroup>
   
-  <!-- <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-  </ItemGroup> -->
+  </ItemGroup>
   
   <PropertyGroup>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -22,11 +23,8 @@
     <None Include="LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
   
-  <ItemGroup>
-    <ProjectReference Include="..\MediatorXL.Abstractions\MediatorXL.Abstractions.csproj" />
-  </ItemGroup>
 
-  <!-- <PropertyGroup>
+  <PropertyGroup>
     <DebugType>embedded</DebugType>
 
     <Deterministic>true</Deterministic>
@@ -34,6 +32,6 @@
     
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-  </PropertyGroup> -->
+  </PropertyGroup>
 
 </Project>
