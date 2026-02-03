@@ -18,5 +18,5 @@ public interface ISender
     /// <param name="message">Message object.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Response object.</returns>
-    Task<TResponse> Request<TResponse>(IMessage<TResponse> message, CancellationToken ct = default);
+    Task<TResponse?> Request<TResponse>(IMessage<TResponse> message, CancellationToken ct = default);
 }

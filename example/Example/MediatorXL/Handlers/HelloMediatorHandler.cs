@@ -3,11 +3,12 @@ using MediatorXL.Abstractions;
 
 namespace Example;
 
-public class HelloMediatorHandler(IServiceProvider serviceProvider) : IEventListener<HelloMediatorRequest>
+public class MediatorRequestHandler(IServiceProvider serviceProvider) : IRequestHandler<MediatorRequest, string>
 {
-    public async Task Handle(HelloMediatorRequest request, CancellationToken ct = default)
+    public async Task<string> Handle(MediatorRequest message, CancellationToken ct = default)
     {
-        Console.WriteLine($"Hello, MediatorXL! My name is {request.Name}! \n I even have: {serviceProvider}");
+        Console.WriteLine($"I'm the {nameof(MediatorRequestHandler)} and i've got a message!");
+        return "Mediator request handler response.";
     }
 }
 

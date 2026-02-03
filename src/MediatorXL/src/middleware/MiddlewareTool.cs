@@ -19,7 +19,8 @@ internal static class MiddlewareTool
     internal static void RegisterGlobalMiddlewares(this IServiceCollection services, IEnumerable<Assembly> assemblies)
     {
         var types = assemblies.SelectMany(
-            x => MediatorReflection.FindSubclassesOf(x, typeof(IGlobalMiddleware)));
+            x => MediatorReflection.FindSubclassesOf(x, typeof(IGlobalMiddleware)))
+            .Where(x => x.GetCustomAttribute<DisabledAttribute>() == null);
 
         foreach (var t in types)
         {
@@ -41,7 +42,7 @@ internal static class MiddlewareTool
     {
         foreach (var middleware in middlewares)
         {
-            await middleware.PreHandle(message, ct);
+            await middleware.BeforeEventHandle(message, ct);
         }
     }
     internal static async Task CallAllPostHandleMiddlewares(this IEnumerable<IGlobalMiddleware> middlewares,
@@ -50,7 +51,7 @@ internal static class MiddlewareTool
     {
         foreach (var middleware in middlewares)
         {
-            await middleware.PostHandle(message, ct);
+            await middleware.AfterEventHandle(message, ct);
         }
     }
 
@@ -61,7 +62,7 @@ internal static class MiddlewareTool
     {
         foreach (var middleware in middlewares)
         {
-            await middleware.PreHandle(message, ct);
+            await middleware.BeforeRequestHandle(message, ct);
         }
     }
     internal static async Task CallAllPostHandleMiddlewares<TResponse>(
@@ -72,7 +73,7 @@ internal static class MiddlewareTool
     {
         foreach (var middleware in middlewares)
         {
-            await middleware.PostHandle(message, response, ct);
+            await middleware.AfterRequestHandle(message, response, ct);
         }
     }
 

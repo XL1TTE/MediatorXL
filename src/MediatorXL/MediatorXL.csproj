@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatorXL.Abstractions" Version="1.0.1" />
+    <PackageReference Include="MediatorXL.Abstractions" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
   </ItemGroup>
   
@@ -21,8 +21,7 @@
   
   <ItemGroup>
     <None Include="LICENSE" Pack="true" PackagePath="" />
-  </ItemGroup>
-  
+  </ItemGroup>  
 
   <PropertyGroup>
     <DebugType>embedded</DebugType>

@@ -31,7 +31,7 @@ internal static class MediatorReflection
     internal static IEnumerable<Type> FindSubclassesOf(Assembly assembly, Type type)
     {
         var types = assembly.GetTypes()
-            .Where(t => IsDefinition(t) && type.IsAssignableFrom(t));
+            .Where(t => IsDefinition(t) && t.IsSubclassOf(type));
 
         return types;
     }

@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 public sealed class Api(IMediator mediator) : ControllerBase
 {
 
-    [HttpGet("/send-goodby")]
-    public async Task<IActionResult> SendGoodBy()
+    [HttpGet("/send-event")]
+    public async Task<IActionResult> SendEvent()
     {
-        var response = await mediator.Request(new GoodNightMediatorRequest { Name = nameof(Api) });
-        return Ok(response);
+        await mediator.Notify(new MediatorEvent());
+        return Ok();
     }
-    [HttpGet("/send-hello")]
-    public async Task<IActionResult> SendHello()
+    [HttpGet("/send-request")]
+    public async Task<IActionResult> SendRequest()
     {
-        await mediator.Notify(new HelloMediatorRequest { Name = nameof(Api) });
-        return Ok("Sended.");
+        var response = await mediator.Request(new MediatorRequest());
+        return Ok(response);
     }
 }

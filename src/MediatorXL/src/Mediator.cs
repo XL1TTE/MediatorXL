@@ -1,5 +1,6 @@
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Reflection;
 using MediatorXL.Abstractions;
 using MediatorXL.Middleware;
@@ -24,18 +25,41 @@ public sealed class MediatorXL(
     {
         var handlers = _serviceProvider.GetServices<IEventListener<TMessage>>();
 
-        await _globalMiddlewares.CallAllPreHandleMiddlewares(message, ct);
+        #region Pre-handlers middleware
+        foreach (var middleware in _globalMiddlewares)
+        {
+            var command = await middleware.BeforeEventHandle(message, ct);
+            if (command is BreakRequestResult)
+            {
+                return;
+            }
+            else if (command is RetryRequestResult _retryCommand)
+            {
+                // Execute retry policy.
+            }
+            else if (command is ContinueRequestResult)
+            {
+                continue;
+            }
+        }
+        #endregion
 
+        #region Handlers execution
         foreach (var handler in handlers)
         {
-            if (ct.IsCancellationRequested) { throw new OperationCanceledException(); }
-            await handler.Handle(message, ct);
+            try { await handler.Handle(message, ct); }
+            catch { break; }
         }
+        #endregion
 
-        await _globalMiddlewares.CallAllPostHandleMiddlewares(message, ct);
-
+        #region Post-handlers middleware
+        foreach (var middleware in _globalMiddlewares)
+        {
+            await middleware.AfterEventHandle(message, ct);
+        }
+        #endregion
     }
-    public async Task<TResponse> Request<TResponse>(IMessage<TResponse> message, CancellationToken ct = default)
+    public async Task<TResponse?> Request<TResponse>(IMessage<TResponse> message, CancellationToken ct = default)
     {
         var requestType = message.GetType();
 
@@ -45,11 +69,34 @@ public sealed class MediatorXL(
             return Activator.CreateInstance(resolverType)!;
         });
 
-        await _globalMiddlewares.CallAllPreHandleMiddlewares(message, ct);
+        #region Pre-handlers middleware
+        foreach (var middleware in _globalMiddlewares)
+        {
+            var command = await middleware.BeforeRequestHandle(message, ct);
+            if (command is BreakRequestResult)
+            {
+                if (command is BreakRequestResult<TResponse> _breakCommand) { return _breakCommand.Response; }
+                else { return default; }
+            }
+            else if (command is RetryRequestResult _retryCommand)
+            {
+                // Execute retry policy.
+            }
+            else if (command is ContinueRequestResult)
+            {
+                continue;
+            }
+        }
+        #endregion
 
         var response = await ((HandlerResolver<TResponse>)resolver).Resolve(message, _serviceProvider, ct);
 
-        await _globalMiddlewares.CallAllPostHandleMiddlewares(message, response, ct);
+        #region Post-handlers middleware
+        foreach (var middleware in _globalMiddlewares)
+        {
+            await middleware.AfterRequestHandle(message, response, ct);
+        }
+        #endregion
 
         return response;
     }
