@@ -16,14 +16,14 @@ namespace MediatorXL.Extensions
 
             foreach (var assembly in config.AssembliesToScan)
             {
-                MediatorReflection.FindGenericTypeDefinitions(assembly, typeof(IEventListener<>))
+                MediatorReflection.FindGenericInterfaceDefenitions(assembly, typeof(IEventListener<>))
                 .ToList()
                 .ForEach(x =>
                 {
                     services.AddTransient(x.@interface, x.type);
                 });
 
-                MediatorReflection.FindGenericTypeDefinitions(assembly, typeof(IRequestHandler<,>))
+                MediatorReflection.FindGenericInterfaceDefenitions(assembly, typeof(IRequestHandler<,>))
                 .ToList()
                 .ForEach(x =>
                 {
@@ -33,9 +33,11 @@ namespace MediatorXL.Extensions
 
             services.RegisterGlobalMiddlewares(config.AssembliesToScan);
 
+            services.RegisterMessageMiddlewares(config.AssembliesToScan);
+
             services.AddSingleton<IMediator, MediatorXL>((serviceProvider) => new MediatorXL(
                serviceProvider,
-               MiddlewareTool.GetMiddlewaresSortedByPriority(serviceProvider)
+               MiddlewareTool.GetGlobalMiddlewaresSortedByPriority(serviceProvider)
             ));
 
             return services;

@@ -28,7 +28,28 @@ internal static class MiddlewareTool
         }
     }
 
-    internal static IEnumerable<IGlobalMiddleware> GetMiddlewaresSortedByPriority(IServiceProvider serviceProvider)
+    internal static void RegisterMessageMiddlewares(this IServiceCollection services, IEnumerable<Assembly> assemblies)
+    {
+        var events = assemblies.SelectMany(
+            x => MediatorReflection.FindGenericInterfaceDefenitions(x, typeof(IEventMiddleware<>)))
+            .Where(x => x.type.GetCustomAttribute<DisabledAttribute>() == null);
+
+        foreach (var t in events)
+        {
+            services.AddTransient(t.@interface, t.type);
+        }
+
+        var requests = assemblies.SelectMany(
+            x => MediatorReflection.FindGenericInterfaceDefenitions(x, typeof(IRequestMiddleware<,>)))
+            .Where(x => x.type.GetCustomAttribute<DisabledAttribute>() == null);
+
+        foreach (var t in requests)
+        {
+            services.AddTransient(t.@interface, t.type);
+        }
+    }
+
+    internal static IEnumerable<IGlobalMiddleware> GetGlobalMiddlewaresSortedByPriority(IServiceProvider serviceProvider)
     {
         var middlewares = serviceProvider.GetServices<IGlobalMiddleware>() ?? Array.Empty<IGlobalMiddleware>();
 

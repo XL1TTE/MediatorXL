@@ -7,7 +7,7 @@ internal static class MediatorReflection
 {
     internal record struct GenericTypeMeta(Type @interface, Type @type);
 
-    internal static IEnumerable<GenericTypeMeta> FindGenericTypeDefinitions(Assembly assembly, Type genericType)
+    internal static IEnumerable<GenericTypeMeta> FindGenericInterfaceDefenitions(Assembly assembly, Type intefaceType)
     {
         var types = assembly.GetTypes()
             .Where(t => IsDefinition(t))
@@ -15,16 +15,7 @@ internal static class MediatorReflection
             (
                 @interface,
                 @type
-            )).Where(x => IsGenericTypeDefenition(x.@interface, genericType)).AsEnumerable();
-
-        return types;
-    }
-    internal static IEnumerable<Type> FindSubclassesOfGeneric(Assembly assembly, Type genericType)
-    {
-        var types = assembly.GetTypes()
-            .Where(t => IsDefinition(t) &&
-                t.GetInterfaces().Any(i => i.IsGenericType &&
-                i.GetGenericTypeDefinition() == genericType));
+            )).Where(x => IsGenericTypeDefenition(x.@interface, intefaceType)).AsEnumerable();
 
         return types;
     }
