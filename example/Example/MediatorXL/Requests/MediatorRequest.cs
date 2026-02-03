@@ -5,5 +5,5 @@ namespace Example;
 
 public class MediatorRequest : IMessage<string>
 {
-    public string InitialResponse = "Initial response message.";
+    public string Data = "Data: {name: 'MediatorXL', messageType: 'request'}";
 }
